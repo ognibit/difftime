@@ -1,0 +1,111 @@
+.TH DIFFTIME 1 2020-11-10 GNU "User Commands"
+.SH NAME
+difftime \- display delta time from two files or one file and now
+.SH SYNOPSIS
+.B difftime
+[\fI\,OPTION\/\fR]... \fI\,FILE\/\fR [[\fI\,OPTION\/\fR] \fI\,FILE\/\fR]
+
+.SH DESCRIPTION
+difftime is a simple utility to calculate and print out the delta time from 
+two files or a file and now. It's usefull to make a gate in a script, based on time.
+
+The output is always a number. It can be signed with a '-' before the digits. 
+By default there isn't a new line character.
+
+The first argument must be a file. With no second argument, it prints out the
+time differnce between the last modification time of the file and now. 
+
+The output is in seconds by default.
+
+Passing the second argument, the difference is between the modification time of
+the second and the first. See OPTIONS to change this behaviour.
+
+.SH OPTIONS
+.TP
+\fB\-a\fR, \fB\-\-atime\fR \fI\,FILE\/\fR
+compare last access time
+.TP
+\fB\-c\fR, \fB\-\-ctime\fR \fI\,FILE\/\fR
+compare change time
+.TP
+\fB\-m\fR, \fB\-\-mtime\fR \fI\,FILE\/\fR
+compare modification time
+.TP
+\fB\-A\fR, \fB\-\-absolute\fR
+output without sign
+.TP
+\fB\-D\fR, \fB\-\-days\fR
+output in days
+.TP
+\fB\-H\fR, \fB\-\-hours\fR             
+output in hours
+.TP
+\fB\-M\fR, \fB\-\-minutes\fR            
+output in minutes
+.TP
+\fB\-P\fR, \fB\-\-print\fR             
+add newline character after the number
+.TP
+\fB\-h\fR, \fB\-\-help\fR               
+display this help message 
+.TP
+\fB\-v\fR, \fB\-\-version\fR            
+display the software version 
+.SH "EXIT STATUS"
+With no arguments, it fail with exit code not zero.
+
+If the file doesn't exists it fail with exit code not zero.
+.SH BUGS
+Bugs can be reported at 
+https://github.com/ognibit/difftime/issues
+.SH EXAMPLES
+Show how old is a file (from now) in minutes
+.
+.IP
+.EX
+difftime -A -P -M /var/spool/myspool 
+.EE
+.
+.P
+Show time difference from files in days
+.
+.IP
+.EX
+difftime -P -D /var/spool/myspool myfile
+.EE
+.
+.P
+Show the time difference in seconds between the access time of one file and the
+change time of the other
+.
+.IP
+.EX
+difftime -P -A -a /var/spool/base -c /var/spool/gate
+.EE
+.
+.P
+A simple way to use difftime into a script to do some operation only after 10
+seconds to the previous effective execution.
+.
+.IP
+.EX
+#!/bin/bash
+
+SPOOL_FILE="spool"
+# time in seconds
+TIME_GATE=10
+
+DT=$(./difftime -A $SPOOL_FILE 2> /dev/null ) || DT=$TIME_GATE
+
+[ $DT -lt $TIME_GATE ] && exit 1
+
+echo "Do the stuff"
+
+# reset the spool time
+touch $SPOOL_FILE
+.EE
+.SH AUTHORS
+Omar Rampado <https://github.com/ognibit>
+.SH "SEE ALSO"
+stat(1)
+difftime(3)
