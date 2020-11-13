@@ -1,12 +1,12 @@
-#include <stdio.h>
-#include <time.h>
-#include <getopt.h>
-#include <string.h>
 #include <errno.h>
-#include <stdlib.h> 
-#include <sys/stat.h>
-#include <unistd.h>
+#include <getopt.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h> 
+#include <string.h>
+#include <sys/stat.h>
+#include <time.h>
+#include <unistd.h>
 
 const char * help_msg = "Help \n\
 version: %s \n\
@@ -84,7 +84,7 @@ void config_init(void);
 void print_help(char *name);
 void print_version(char *name);
 
-void die(const char *msg);
+void die(const char *prefix, const char *msg);
 
 /*
  * time difference
@@ -152,15 +152,16 @@ int main(int argc, char *argv[])
     }
 
     /* Extract the times */
+    errno = 0;
    
     if (ffrom == NULL){
         if (optind >= argc)
-            die("filename required. See -h");
+            die("First file","filename required. See -h");
         ffrom = argv[optind++];
     }
 
     if (stat(ffrom, &st) < 0)
-        die(strerror(errno));
+        die(ffrom, strerror(errno));
 
     tfrom = extract_time(&st, config.from_time);
 
@@ -173,12 +174,12 @@ int main(int argc, char *argv[])
 
     if (fto != NULL){ /* with filename */
         if (stat(fto, &st) < 0)
-            die(strerror(errno));
+            die(fto,strerror(errno));
 
         tto = extract_time(&st, config.to_time);
     } else {   /* not provided, use the current time */
         if (time(&tto) < 0)
-            die("Cannot get time");
+            die("Get current time",strerror(errno));
     }
 
     /* OUTPUT */
@@ -219,9 +220,15 @@ void print_version(char *name)
     fprintf(stdout, "%s: %s\n", name, VERSION);
 }
 
-void die(const char *msg)
+void die(const char *prefix, const char *msg)
 {
-    fprintf(stderr, "FATAL: %s\n", msg);
+    if (prefix){
+        fprintf(stderr, "%s: ", prefix);
+    } else {
+        fprintf(stderr, "FATAL: ");
+    }
+
+    fprintf(stderr, "%s\n", msg);
     exit(EXIT_FAILURE);
 }
 
@@ -230,8 +237,8 @@ time_t timediff(time_t a, time_t b, bool abs)
     time_t d;
 
     d = difftime(a, b);
-    if (d < 0 && abs)
-        d *= -1;
+    if (abs)
+        d = labs(d);
 
     return d;
 }
