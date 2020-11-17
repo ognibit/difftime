@@ -21,6 +21,7 @@ usage: %s \
 [-P|--print] \
 [-h|--help] \
 [-v|--version] \
+file1 [file2] \
 \n\
 \n\
 difftime is a simple utility to calculate and print out the delta time from \n\
@@ -39,7 +40,9 @@ Options: \n\
     -v, --version            display the software version \n\
 \n\
 Example: \n\
-    difftime -P /var/spool/newer /var/spool/older\n\
+    difftime -P /var/spool/older /var/spool/newer\n\
+    difftime -P /var/spool/file \n\
+    difftime -P -D -c /var/spool/file -a file2 \n\
 ";
 
 static struct option const long_options[] = {
@@ -129,6 +132,7 @@ int main(int argc, char *argv[])
             break;
         case 'v': /* version */
             print_version(argv[0]);
+            exit(EXIT_SUCCESS); 
             break;
         case 'A': /* absolute */
             config.absolute = true;
@@ -190,7 +194,7 @@ int main(int argc, char *argv[])
         strcpy(fmt, "%ld");
     }
 
-    tdiff = timediff(tfrom, tto, config.absolute);
+    tdiff = timediff(tto, tfrom, config.absolute);
     switch (config.output_unit){
     case SECONDS:
         /* nothing to do */

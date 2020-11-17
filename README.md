@@ -28,9 +28,9 @@ the second and the first.
 
 ```
 difftime -P /var/spool/older /var/spool/newer
--1234
-difftime -P /var/spool/newer /var/spool/older
 1234
+difftime -P /var/spool/newer /var/spool/older
+-1234
 ```
 
 ## Options
