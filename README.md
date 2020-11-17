@@ -80,6 +80,26 @@ difftime -P -D -A -a /var/spool/base -c /var/spool/gate
 3
 ```
 
+### Diff Field
+By default all the timestamp is compared. To diff only a part (field) of the
+timestamp, such as the day, use the option `-f` or `--field` with argument:
+- `Y` year
+- `M` month
+- `D` day
+- `h` hour
+- `m` minute
+- `s` second
+
+The output options are ignored because the unit of the output number is the
+same of the field.
+
+To check how many days before was modified a file, no matters the exact time
+```
+difftime -P -A -f D file
+1
+```
+`1` stands for one day of difference, so it was modified yesterday.
+
 ### Help and Version
 You can access to the *help* and show the *version* with these options:
 - `-h` for the help
