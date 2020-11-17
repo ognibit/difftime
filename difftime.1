@@ -1,4 +1,4 @@
-.TH DIFFTIME 1 2020-11-10 GNU "User Commands"
+.TH DIFFTIME 1 2020-11-17 GNU "User Commands"
 .SH NAME
 difftime \- display delta time from two files or one file and now
 .SH SYNOPSIS
@@ -30,6 +30,9 @@ compare change time
 .TP
 \fB\-m\fR, \fB\-\-mtime\fR \fI\,FILE\/\fR
 compare modification time
+.TP
+\fB\-f\fR, \fB\-\-field\fR \fI\,field\/\fR
+diff only a part of the timestamp. 'Y' year, 'M' month, 'D' day, 'h' hour, 'm' minute, 's' second.
 .TP
 \fB\-A\fR, \fB\-\-absolute\fR
 output without sign
@@ -103,6 +106,15 @@ echo "Do the stuff"
 
 # reset the spool time
 touch $SPOOL_FILE
+.EE
+.
+.P
+Execute a command once a day (like anacron)
+.
+.IP
+.EX
+DT=$(./difftime -A -f D $SPOOL_FILE 2> /dev/null ) || DT=1
+[ $DT -eq 0 ] && exit 1
 .EE
 .SH AUTHORS
 Omar Rampado <https://github.com/ognibit>
